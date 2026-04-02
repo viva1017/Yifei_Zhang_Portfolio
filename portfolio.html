@@ -1,0 +1,1008 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Viva Zhang — Portfolio</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,300;1,400&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+
+    :root {
+      --bg:         #F3F8F2;
+      --bg-alt:     #EAF3E8;
+      --forest:     #1C3620;
+      --deep:       #2E5233;
+      --sage:       #6E9B74;
+      --sage-light: #9CBE9F;
+      --sage-pale:  #C8DEC9;
+      --mint:       #B8D4BA;
+      --leaf:       #4A7A50;
+      --earth:      #5A7D5C;
+      --text:       #1C2E1E;
+      --text-mid:   #456047;
+      --text-soft:  #7A9B7D;
+      --border:     #D0E4D1;
+      --card-bg:    #FAFCFA;
+    }
+
+    body { background: var(--bg); font-family: 'Inter', sans-serif; color: var(--text); -webkit-font-smoothing: antialiased; }
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-thumb { background: var(--sage); border-radius: 99px; }
+
+    /* Animations */
+    .page-enter { animation: fadeUp 0.4s cubic-bezier(0.22,1,0.36,1) both; }
+    @keyframes fadeUp { from { opacity:0; transform:translateY(14px); } to { opacity:1; transform:translateY(0); } }
+    .stagger > * { animation: fadeUp 0.4s cubic-bezier(0.22,1,0.36,1) both; }
+    .stagger > *:nth-child(1) { animation-delay:0.05s; }
+    .stagger > *:nth-child(2) { animation-delay:0.13s; }
+    .stagger > *:nth-child(3) { animation-delay:0.21s; }
+    .stagger > *:nth-child(4) { animation-delay:0.29s; }
+    .stagger > *:nth-child(5) { animation-delay:0.37s; }
+    .stagger > *:nth-child(6) { animation-delay:0.45s; }
+
+    /* Marquee */
+    .marquee-wrap { overflow:hidden; white-space:nowrap; width:100%; }
+    .marquee-track { display:inline-flex; animation:marquee 30s linear infinite; }
+    .marquee-track:hover { animation-play-state:paused; }
+    @keyframes marquee { from { transform:translateX(0); } to { transform:translateX(-50%); } }
+
+    /* Nav */
+    .nav-link { position:relative; padding-bottom:3px; }
+    .nav-link::after { content:''; position:absolute; bottom:0; left:0; height:1.5px; width:0; background:var(--sage); transition:width 0.3s ease; border-radius:99px; }
+    .nav-link:hover::after, .nav-link.active::after { width:100%; }
+
+    /* Cards */
+    .card { background:var(--card-bg); border:1px solid var(--border); border-radius:18px; transition:transform 0.28s ease,box-shadow 0.28s ease,border-color 0.28s ease; }
+    .card:hover { transform:translateY(-6px); box-shadow:0 20px 56px rgba(46,82,51,0.11); border-color:var(--sage-pale); }
+    .card-exp { border-left:3px solid transparent; transition:border-left-color 0.28s,transform 0.28s,box-shadow 0.28s,background 0.28s; border-radius:16px; background:var(--card-bg); border-top:1px solid var(--border); border-right:1px solid var(--border); border-bottom:1px solid var(--border); }
+    .card-exp:hover { border-left-color:var(--sage); transform:translateY(-4px); box-shadow:0 16px 48px rgba(46,82,51,0.10); background:#F8FCF8; }
+
+    /* Human Side cards */
+    .hs-card { cursor:pointer; transition:transform 0.28s ease,box-shadow 0.28s ease,border-color 0.28s ease; }
+    .hs-card:hover { transform:translateY(-6px) scale(1.01); box-shadow:0 24px 60px rgba(46,82,51,0.14); }
+    .hs-card:hover .hs-hint { opacity:1 !important; transform:translateY(0) !important; }
+
+    /* Buttons */
+    .btn-forest { background:var(--forest); color:#E8F4E8; border:1.5px solid var(--forest); transition:background 0.22s,border-color 0.22s; cursor:pointer; }
+    .btn-forest:hover { background:var(--deep); border-color:var(--deep); }
+    .btn-leaf { background:transparent; color:var(--deep); border:1.5px solid var(--sage); transition:background 0.22s,color 0.22s,border-color 0.22s; cursor:pointer; }
+    .btn-leaf:hover { background:var(--sage-pale); border-color:var(--leaf); color:var(--leaf); }
+
+    /* Tag */
+    .tag { display:inline-flex; align-items:center; background:rgba(110,155,116,0.12); color:var(--leaf); font-size:11px; font-weight:600; letter-spacing:0.05em; padding:4px 12px; border-radius:99px; border:1px solid rgba(110,155,116,0.3); }
+
+    /* Eyebrow */
+    .eyebrow { font-size:10px; font-weight:700; letter-spacing:0.18em; text-transform:uppercase; color:var(--sage); }
+
+    /* Dot grid */
+    .dot-bg { background-image:radial-gradient(circle, rgba(110,155,116,0.2) 1px, transparent 1px); background-size:26px 26px; }
+
+    /* Pull quote */
+    .pull-quote { border-left:3px solid var(--sage); padding-left:20px; }
+
+    /* Skill chip */
+    .skill-chip { display:inline-flex; align-items:center; gap:6px; padding:6px 14px; border-radius:8px; background:rgba(110,155,116,0.1); border:1px solid var(--border); font-size:12px; font-weight:500; color:var(--earth); }
+
+    /* Form */
+    .form-input { width:100%; padding:13px 16px; border-radius:10px; border:1.5px solid var(--border); background:#fff; font-size:14px; font-family:'Inter',sans-serif; color:var(--text); transition:border-color 0.2s; outline:none; }
+    .form-input:focus { border-color:var(--sage); box-shadow:0 0 0 3px rgba(110,155,116,0.12); }
+
+    /* Mobile menu */
+    .mobile-menu { animation:slideDown 0.22s ease both; }
+    @keyframes slideDown { from { opacity:0; transform:translateY(-6px); } to { opacity:1; transform:translateY(0); } }
+
+    /* Photo slot */
+    .photo-slot { transition:all 0.24s ease; cursor:default; }
+    .photo-slot:hover { border-color:var(--sage) !important; background:rgba(110,155,116,0.08) !important; }
+    .photo-slot:hover .ps-icon { opacity:0.85 !important; transform:scale(1.12) !important; }
+    .ps-icon { transition:opacity 0.24s ease, transform 0.24s ease; }
+
+    /* Modal */
+    .modal-overlay { animation:mFadeIn 0.2s ease both; }
+    @keyframes mFadeIn { from{opacity:0} to{opacity:1} }
+    .modal-inner { animation:mSlideUp 0.3s cubic-bezier(0.22,1,0.36,1) both; }
+    @keyframes mSlideUp { from{opacity:0;transform:translateY(28px) scale(0.97)} to{opacity:1;transform:translateY(0) scale(1)} }
+
+    /* Responsive */
+    @media(max-width:720px) {
+      .detail-grid { grid-template-columns:1fr !important; }
+      .photo-grid { grid-template-columns:1fr 1fr !important; }
+    }
+    @media(max-width:560px) { .photo-grid { grid-template-columns:1fr !important; } }
+    @media(max-width:900px) { .hide-mobile { display:none !important; } }
+  </style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+  const { useState, useEffect, useCallback, useRef } = React;
+
+  /* ─────────────────────────────────────────────────
+     TRANSLATIONS  (your latest edits, bug fixed)
+  ───────────────────────────────────────────────── */
+  const T = {
+    en: {
+      nav: { home:'Home', education:'Education', experience:'Experience', projects:'Projects', humanSide:'Human Side', contact:'Contact' },
+      home: {
+        eyebrow:'New York · Beijing · Columbia Business School · New York University',
+        name1:'Yifei', name2:'(Viva) Zhang',
+        tagline:'Marketing Strategy · Consumer Insight · Business Analytic',
+        bio1:'I enjoy making complex things easier to understand, bringing structure to ambiguity, aligning different perspectives, and helping teams move decisions forward.',
+        bio2:'I tend to think through three lenses: how a story is understood, what it actually means, and how ambiguity can be shaped into direction. With training in data-informed thinking and AI-enabled marketing analysis, I use both cultural intuition and quantitative reasoning to turn scattered signals into strategies teams can actually act on.',
+        cta1:'View Experience', cta2:'View Projects', cta3:'Contact', cta4:'LinkedIn ↗',
+        stats:['New York × Beijing · Bilingual','Cross-Cultural Team Experience','Consumer Insight × AI-Driven Analytics','Cat Owner'],
+        marquee:'🌿  Brand Strategy  ·  Consumer Insight  ·  SQL  ·  Film Marketing  ·  A/B Testing  ·  User Research  ·  KOL Marketing  ·  Financial Modeling  ·  AI-Driven Analytics  ·  Cross-Cultural Communication  ·  Integrated Marketing  ·  ',
+      },
+      education: {
+        title:'Education', subtitle:'Academic foundation across media, marketing, and data science.',
+        cbs: { school:'Columbia Business School', degree:'MS in Marketing Science', years:'2025 – 2027', gre:'GRE 328', desc:'A highly selective, industry-oriented program combining PhD and MBA-level courses. Focused on data-driven consumer insight, product decision-making, causal inference, and growth experimentation.', courses:'Product Management · Growth Hacking · Foundation of AI for Business · Generative AI for Business · GenAI Meets Marketing Data · Media Planning & Growth Marketing · Consulting Skills · Statistical Modeling & Decision Making · Python for Data Science', clubs:'AI Club · Marketing Association of Columbia · Retail & Luxury Goods Club', tags:['Marketing Analytics','AI & Machine Learning','Consumer Research','Strategy & Consulting'] },
+        nyu: { school:'New York University', degree:'BS in Media, Culture & Communication', minor:'Minor in Economics', honors:"Magna Cum Laude · Phi Beta Kappa Honor Society · Dean's List 2021–2025 · Founders Day Award", gpa:'GPA 3.92', desc:'Focused on the Technology and Society track, studying how digital media, platforms, and data systems shape social behavior, culture, and communication.', tags:['Media Studies','Consumer Behavior','Economics','Cultural Theory','Digital Media','Platform Studies'] },
+      },
+      experience: {
+        title:'Experience', subtitle:'Experience across advertising, marketing, finance, and film and entertainment', viewBtn:'View Details →',
+        cards: {
+          ogilvy:    { company:'Ogilvy', role:'Account Executive Intern — Audi Team', period:'Spring & Summer 2025', location:'Beijing, China', summary:'Delivered monthly bilingual competitive intelligence on 16 global EV brands and coordinated cross-border advertising campaign project delivery in a fully English, international team spanning clients, creative, and media.', tags:['Advertising Strategy','TVC & Video Campaigns','Competitive Intelligence','Cross-functional Collaboration'] },
+          xiaomi:    { company:'Xiaomi Corporation', role:'Marketing Intern — Retail Marketing Department', period:'Summer 2024', location:'Beijing, China', summary:'Managed multiple social media accounts end-to-end and led integrated marketing for new product launches, acting as the central communication bridge between HQ and national regional branches.', tags:['Social Media','Integrated Marketing','Campaign Analytics'] },
+          gf:        { company:'GF Securities', role:'Equity Research Intern — Media and Technology Industry', period:'Summer 2023', location:'Beijing, China', summary:'Co-authored in-depth industry reports on AI and media sectors, synthesized daily market intelligence, and produced financial data visualizations using Wind and Excel.', tags:['Equity Research','Financial Modeling','Industry Analysis'] },
+          darkHorse: { company:'Dark Horse Culture Media', role:'Film Marketing Intern', period:'Summer 2022', location:'Beijing, China', summary:'Designed marketing campaigns for major Chinese film releases, planning premiere activations and short-form video strategies. Produced creative copy while contributing to video content planning and online promotion.', tags:['Film Marketing','Short-Video Strategy','Content Planning','Social Media Campaigns'] },
+        },
+      },
+      experienceDetails: {
+        ogilvy:    { company:'Ogilvy', role:'Account Executive Intern — Audi Team', period:'Spring & Summer 2025', location:'Beijing, China', overview:"Embedded within Ogilvy's Audi account team, I worked at the intersection of competitive intelligence, creative strategy, and cross-border project management — operating in a fully English, international team across time zones.", worked:['Competitor Research & Analysis: Independently delivered monthly bilingual competitive insights on 16 global new-energy vehicle brands, analyzing product positioning, content strategy, launch timing, and multi-platform digital performance across a 5-dimension framework.','Cross-Border Project Coordination: Worked in a fully English, cross-time-zone international team — coordinating between clients, internal creative and strategy teams, and external vendors to align requirements, manage timelines, and ensure on-time asset delivery.','Campaign Planning: Supported campaign proposals through user insight synthesis and creative development, including script refinement, creative reference curation, and KOL/celebrity collaboration recommendations.'], impact:'Built a structured 5-dimension competitive tracking framework (positioning / content / cadence / channel / performance) used as a recurring strategic reference by the team, driving clearer and faster brief development.', skills:['Competitive Intelligence','Brand Strategy','Creative Briefing','Cross-functional Coordination','Bilingual Communication'] },
+        xiaomi:    { company:'Xiaomi Corporation', role:'Marketing Intern — Retail Marketing Department', period:'Summer 2024', location:'Beijing, China', overview:"Joined Xiaomi's Retail Marketing team to manage social media operations and support integrated campaign delivery for new product launches — acting as the central communication bridge between HQ and national regional branches.", worked:['Social Media Management: Managed Weibo operations end-to-end — content creation, scheduling, design/compliance coordination, and engagement strategy including giveaways and direct audience interaction.','Integrated Marketing Execution: Supported new product launches and cross-IP campaigns covering brief development, KOL script planning, content review, online promotion, and on-site execution; collaborated with MCNs, design, legal, and e-commerce teams.','Cross-Functional Communication: Served as the primary link between HQ and regional marketing branches, coordinating unified content schedules and assets while incorporating regional localization feedback.','Data-Informed Decision Support: Monitored multi-platform performance data to support paid promotion decisions and giveaway allocation under budget constraints, informing future content and campaign planning.'], impact:"Coordinated content rollout across Xiaomi's retail channels, improving consistency of messaging across regions and supporting data-driven allocation of limited promotional budgets.", skills:['Social Media Management','Integrated Marketing','Campaign Analytics','Cross-functional Communication','Content Strategy'] },
+        gf:        { company:'GF Securities', role:'Equity Research Intern — Media & Internet Group', period:'Summer 2023', location:'Beijing, China', overview:"Contributed to GF Securities' equity research division, focused on the media and internet sector — with particular emphasis on emerging AI companies, short-video platforms, and entertainment industry dynamics.", worked:['Research & Reporting: Collected and analyzed company data to support market analysis; co-authored industry and company reports covering development history, equity structure, IPO rationale, and product portfolio.','Industry Trend Monitoring: Tracked daily developments across media, internet, and AI sectors — synthesizing high-frequency information into structured analyst-ready insights on company announcements, film performance, short-video metrics, and trading activity.','Data Analysis & Visualization: Extracted and analyzed multi-dimensional financial and operational data using Wind and Excel; conducted data cleaning, produced charts, comparative analyses, and industry trend visuals.'], impact:"Compiled daily intelligence reports and research note contributions that supported analysts' coverage of AI and media sector dynamics during a high-volatility period.", skills:['Equity Research','Financial Data Analysis','Industry Trend Monitoring','Wind / Excel Modeling','Investment Writing'] },
+        darkHorse: { company:'Dark Horse Culture Media', role:'Film Marketing Intern', period:'Summer 2022', location:'Beijing, China', overview:"Supported the marketing team at Dark Horse Culture Media in planning and executing premiere campaigns for major Chinese theatrical releases — from content creation through to on-site event execution.", worked:['Premiere Marketing: Planned and executed embedded marketing activations for The Fallen Bridge, generating multiple trending topics on Weibo and Chinese Douyin on premiere day.','Copywriting: Produced captions for official Douyin posts, interview outlines for premiere guests, and post-screening audience Q&A scripts for films including The Fallen Bridge, Home Coming, The Sky Hunter, and Moon Man.','Content Strategy: Developed Douyin short video strategies, organized behind-the-scenes content pipelines, and created celebrity profile concepts to strengthen cast profiles and boost pre-release publicity.'], impact:"Premiere marketing activations for The Fallen Bridge drove multiple trending hashtags on launch day — an earned media outcome that significantly extended the film's organic reach beyond paid promotion.", skills:['Film Marketing','Social Media Strategy','Copywriting','Event Marketing','Trend Activation'] },
+      },
+      projects: {
+        title:'Projects', subtitle:'Selected work at the intersection of strategy, data, and communication.', viewBtn:'View Project →',
+        items:[
+          { slug:'grove-market-research',   title:'Grove — User Research & Product Strategy',  summary:'In-depth user research for an early-stage dating app to map motivation, behavior, and conversion drop-offs, delivering a strategy package that informed product positioning and feature prioritization.', tools:['User Interviews','Survey Design','Regression Analysis','User Journey Mapping'] },
+          { slug:'pelican-invest-growth',    title:'Pelican Invest — Paid Media & Growth',        summary:"Executed Meta paid campaigns and A/B tests for a fintech startup's product launch, reaching ~15K impressions and generating statistically significant insights on creative performance and platform strategy.", tools:['Meta Ads','A/B Testing','CTR Analysis','Performance Reporting'] },
+        ],
+      },
+      projectDetails: {
+        'grove-market-research': { title:'Grove — User Research & Product Strategy', summary:'In-depth user research and data-driven strategy for an early-stage dating app navigating product-market fit.', overview:'Partnered with Grove, an early-stage dating app, to conduct structured user research and quantitative analysis, producing a comprehensive strategy package to support product positioning, feature prioritization, and conversion optimization.', sections:[{heading:'User Research & Segmentation',content:'Conducted 9 in-depth user interviews to segment users by motivation and behavior. Mapped key user actions and drop-off points from matching through to offline meetups, identifying the specific friction points most likely to drive churn.'},{heading:'Quantitative Validation',content:'Formed hypotheses from qualitative findings and competitor research, then validated them using survey data and regression analysis — identifying the key behavioral drivers of trial intent and offline conversion with statistical confidence.'},{heading:'Strategy Deliverable',content:'Delivered a comprehensive strategy package including a competitive landscape matrix, user journey map, behavioral segmentation framework, and data-backed product optimization recommendations.'}], tools:['User Interviews (n=9)','Survey Design','Linear Regression','Competitive Matrix','User Journey Mapping'] },
+        'pelican-invest-growth':  { title:'Pelican Invest — Paid Media & Growth Experimentation', summary:"Meta paid advertising campaigns and A/B tests for a fintech startup's children's finance book launch.", overview:"Designed and executed a paid media experiment for Pelican Invest's launch of Penny The Pelican Plans Ahead, using Meta's ad platform to test creative formats, optimize targeting, and develop a data-grounded media strategy.", sections:[{heading:'Campaign Setup & A/B Testing',content:"Ran controlled A/B tests on Meta platforms (Facebook and Instagram), testing storytelling-driven creatives vs. functional information-based creatives across both placements to isolate the impact of creative format on performance."},{heading:'Results',content:"Reached approximately 15,000 impressions. Instagram achieved a 4.32% CTR at higher CPM. Storytelling-driven creatives significantly outperformed functional creatives (3.38% vs. 1.93% CTR), with landing page visit rates rising from 1.68% to 3.06% (p < 0.001)."},{heading:'Strategic Output',content:"Produced a final performance analysis report with platform role allocation recommendations and creative strategy guidelines — directly informing the client's approach for subsequent campaign phases."}], tools:['Meta Ads Manager','A/B Testing','Statistical Significance Testing','CTR & ROAS Analysis','Performance Reporting'] },
+      },
+      humanSide: {
+        title:'Human Side', subtitle:'Beyond strategy decks and spreadsheets.',
+        items:[
+          { emoji:'💃', title:'Dancer', desc:'With experiences across ballet, Chinese classical and folk dance, K-pop, hip-hop, and jazz, I’ve developed both versatility and cultural awareness. I am now a core member of Harmonyc Movement, a NYC-based K-pop dance group with 120K+ YouTube subscribers. Dance has shaped how I collaborate, communicate, and stay grounded in uncertainty.', photos:['harmonyc_youtube.PNG','跳舞合集.JPG','youtube_playlist.jpg'] },
+          { emoji:'🏂', title:'Snowboarding', desc:'Addicted to the mountain. Every run is a real-time decision-making exercise, commit fast, adjust faster.' ,photos:['滑雪单人.JPG','滑雪合照.JPG','滑雪拼图.JPG']},
+          { emoji:'✈️', title:'Travel', desc:'Collecting perspectives, not just passport stamps. Every city is a live case study in culture, design, and human behavior.', photos:['阿拉斯加极光.JPG','秘鲁亚马逊.JPG','denver.jpg'] },
+          { emoji:'📷', title:'Photography', desc:'I naturally frame the world through visuals, composition and storytelling show up everywhere, including in marketing.', photos:['乌兰察布.JPG','波多黎各老城区.JPG','波多黎各天空.JPG'] },
+          { emoji:'🐱', title:'Cats Owner', desc:'Living with two cats means constantly negotiating with irrational users. Great practice for understanding real behavior, not what people say, but what they actually do.', photos:['小北.JPG','VV.JPG','VV和小北.JPG'] },
+          { emoji:'🌐', title:'Global & Bilingual', desc:'Native in Chinese, fluent in English. Comfortable working across cultures and aligning teams in global environments.', photos:['MSM合照.jpg','奥美合照.jpg','nyu毕业照.JPG'] },
+        ],
+      },
+      contact: {
+        title:'Contact', subtitle:"Let's build something meaningful together.",
+        emailLabel:'Email', linkedinLabel:'LinkedIn', phoneLabel:'Phone',
+        emailValue:'YifZhang27@gsb.columbia.edu', linkedinValue:'www.linkedin.com/in/yifei-viva-zhang-9b1232271', phoneValue:'+1 (917) 769-1037',
+        quote:'Always eager to learn. Happy to connect!',
+        form:{ name:'Your Name', email:'Your Email', message:'Your Message', send:'Send Message' },
+        successTitle:'Message Sent', successDesc:"Thanks for reaching out. I'll be in touch soon.",
+      },
+      gallery: {
+        sectionLabel:'Work Snapshots',
+        slots:['Screenshot 01','Screenshot 02','Screenshot 03','Screenshot 04'],
+        mediaLabel:'Photos',
+        photoSlots:['Photo 01','Photo 02'],
+        videoSlot:'Video',
+        photoHint:'Add photo — replace src attribute',
+        videoHint:'Add video — replace src attribute',
+        peekLabel:'Click to explore',
+        closeBtn:'Close',
+      },
+    },
+    zh: {
+      nav: { home:'首页', education:'教育背景', experience:'工作经验', projects:'项目', humanSide:'我的另一面', contact:'联系我' },
+      home: {
+        eyebrow:'纽约 · 北京· 哥伦比亚大学商学院 · 纽约大学',
+        name1:'张逸菲', name2:'Viva Zhang',
+        tagline:'市场营销 · 消费者洞察 · 商业分析',
+        bio1:'用结构化思考，把复杂问题变成清晰决策。',
+        bio2:'我关注市场、产品与用户之间的关系，擅长在不确定中拆解问题、识别关键变量，并用数据与逻辑支持决策。过往在不同行业的实习经历以及我的跨学科背景，让我既能理解品牌表达，也能落地商业结果。',
+        cta1:'查看经验', cta2:'查看项目', cta3:'联系我', cta4:'LinkedIn ↗',
+        stats:['纽约 × 北京 · 中英双语','国际团队协作经验','消费者洞察 × AI驱动数据分析'],
+        marquee:'🌿  品牌战略  ·  消费者洞察  ·  SQL  ·  电影营销  ·  A/B测试  ·  用户研究  ·  KOL营销  ·  财务建模  ·  AI驱动分析  ·  跨文化传播  ·  整合营销  ·  ',
+      },
+      education: {
+        title:'教育背景', subtitle:'结合媒体、营销与数据分析的跨学科基础。',
+        cbs: { school:'哥伦比亚大学商学院', degree:'市场营销科学理学硕士', years:'2025 – 2027', gre:'GRE 328', desc:'融合统计建模与因果推断训练，以及商业与战略课程；聚焦数据驱动的用户洞察、产品决策与增长实验。高度选拔性项目，结合博士与MBA课程体系。', courses:'产品管理 · 增长黑客· AI大模型应用基础 · GenAI商业应用 · GenAI营销数据 · 增长营销与媒介规划 · 咨询技能 · 统计建模与决策科学 · Python数据科学编程', clubs:'AI俱乐部 · 哥大市场营销协会 · 零售与奢侈品俱乐部', tags:['营销分析','AI与机器学习','消费者研究','战略咨询'] },
+        nyu: { school:'纽约大学', degree:'媒体、文化与传播学学士', minor:'经济学辅修', honors:'最优等荣誉毕业 · 美国优等生荣誉学会 · 院长荣誉榜 2021–2025 · 创校日奖', gpa:'GPA 3.92', desc:'主修科技与社会方向，研究数字平台、数据系统与新兴技术如何塑造媒体生态、社会互动与消费者行为。课程结合媒体研究与技术分析训练。通过跨学科训练，我逐步建立了从文化、技术与数据交叉视角分析媒体生态、平台逻辑与数字消费行为的能力。', tags:['媒体研究','消费者行为','经济学','文化理论'] },
+      },
+      experience: {
+        title:'工作经验', subtitle:'跨越广告、营销、金融与娱乐行业的实践积累。', viewBtn:'查看详情 →',
+        cards: {
+          ogilvy:    { company:'奥美广告', role:'客户执行（AE）实习生 — 奥迪组', period:'2025年春季及暑期', location:'北京', summary:'独立完成16家全球新能源品牌双语月度竞品分析，并在全英文、跨时区国际团队中承担跨部门协调职责，确保项目按时交付。', tags:['品牌战略','竞品分析','跨团队协调'] },
+          xiaomi:    { company:'小米科技', role:'市场传播实习生 — 零售市场部', period:'2024年暑期', location:'北京', summary:'全面管理微博运营，主导新品上市及跨IP整合营销活动，担任总部与全国分公司之间的核心沟通枢纽。', tags:['社交媒体','整合营销','营销数据分析'] },
+          gf:        { company:'广发证券', role:'行业研究实习生 — 传媒互联网组', period:'2023年暑期', location:'北京', summary:'参与AI与传媒行业深度报告撰写，从高频信息流中提炼结构化分析要点，使用Wind与Excel完成财务数据分析与可视化。', tags:['行业研究','财务数据分析','信息合成'] },
+          darkHorse: { company:'蓝天黑马文化传媒', role:'策划实习生', period:'2022年暑期', location:'北京', summary:'参与《断桥》《万里归途》《长空之王》《独行月球》等影片宣发策划，《断桥》首映礼预埋方案当天多次进入热搜。', tags:['电影营销','社交媒体','内容策划'] },
+        },
+      },
+      experienceDetails: {
+        ogilvy:    { company:'奥美广告', role:'客户执行（AE）实习生 — 奥迪组', period:'2025年春季及暑期', location:'北京', overview:'嵌入奥美奥迪客户团队，在竞品洞察、创意策略与跨境项目管理的交汇处工作——在全英文、跨时区的国际化团队环境中运作。', worked:['竞品与用户洞察：独立完成16家全球新能源品牌双语月度竞品分析，搭建5维框架（定位/内容/节奏/渠道/效果），为传播策略与内容方向提供依据。','跨团队项目管理：在全英文、跨时区、多国团队中拆解需求、定位分歧关键点；通过结构化会议纪要与决策记录对齐方向，减少反复修改并提升交付效率。','方案支持：通过用户洞察整合与创意开发（包括脚本打磨、创意参考整理及KOL/艺人合作建议）支持营销提案。'], impact:'搭建了完整的5维竞品追踪框架，成为团队常用战略参考工具，有效提升了创意简报的清晰度与开发效率。', skills:['竞品情报','品牌战略','创意简报','跨职能协调','双语沟通'] },
+        xiaomi:    { company:'小米科技', role:'市场传播实习生 — 零售市场部', period:'2024年暑期', location:'北京', overview:'加入小米零售市场部，负责社交媒体运营与新品上市整合营销推进，担任总部与全国各地分公司之间的核心沟通枢纽。', worked:['社交媒体运营：全面管理微博运营——内容创作、排期管理、设计/合规协调，以及通过策略性帖子、福利抽奖和直接互动驱动粉丝增长。','整合营销落地：支持新品上市与跨IP活动全流程，涵盖brief撰写、KOL脚本规划、内容审核、线上推广及线下执行；联动MCN、设计、法务、电商等团队驱动项目落地。','跨部门沟通：作为总部与全国各地分公司的核心协调枢纽，统一传播节奏与内容排期，结合区域差异提出本地化优化建议。','数据驱动决策支持：监测多平台内容表现数据，在预算约束下支持付费推广与福利资源分配决策。'], impact:'统筹小米之家微博/微信/视频号内容矩阵，提升了各区域信息一致性，并支持了有限促销预算的数据驱动分配决策。', skills:['社交媒体运营','整合营销','营销数据分析','跨职能沟通','内容策略'] },
+        gf:        { company:'广发证券', role:'行业研究实习生 — 传媒互联网组', period:'2023年暑期', location:'北京', overview:'参与广发证券传媒互联网组的行业研究工作，重点关注AI公司、短视频平台及文娱行业动态，支持分析师与机构客户的研究判断。', worked:['研究与报告撰写：收集并分析公司数据支持市场分析；参与撰写AI与科技企业深度报告，梳理全球AI监管趋势与数据确权政策影响。','行业信息监测：跟踪传媒互联网与AI行业动态，从高频信息流中提炼结构化分析要点，形成分析师可用的研究素材。','数据分析与可视化：使用Wind提取财务与运营指标，完成数据清洗、可视化与对比分析，支持行业与公司深度研报产出。'], impact:'持续输出每日行业动态报告与研报贡献内容，在AI高速发展期有效支持了分析师的覆盖与判断。', skills:['行业研究','财务数据分析','信息监测与合成','Wind/Excel建模','投资写作'] },
+        darkHorse: { company:'北京蓝天黑马文化传媒', role:'短视频策划实习生', period:'2022年暑期', location:'北京', overview:'参与多部重点影片的宣发统筹，涵盖首映活动策划、短视频内容策略与艺人传播人设打造。', worked:['首映宣发：策划并执行《断桥》首映礼预埋方案，活动当天多次进入微博与抖音热搜，实现显著的自然流量放大。','文案创作：为《断桥》《万里归途》《长空之王》《独行月球》等影片产出官方抖音文案、首映嘉宾采访提纲及映后观众Q&A脚本。','内容策略：制定抖音短视频内容策略，组织幕后花絮内容产出，开发艺人传播人设方案，强化主创阵容的公众形象。'], impact:'独立负责的《断桥》首映礼预埋方案驱动多个热搜话题，以及社交媒体声量，有效扩大了影片口碑覆盖面。', skills:['电影营销','社交媒体策略','内容文案','活动营销','热搜话题运营'] },
+      },
+      projects: {
+        title:'项目', subtitle:'战略、数据与传播交汇处的精选作品。', viewBtn:'查看项目 →',
+        items:[
+          { slug:'grove-market-research',  title:'Grove — 用户研究与产品策略',        summary:'为初创约会App开展深度用户研究，构建用户动机与行为分群，识别关键流失节点，产出支持产品定位与功能优先级的策略包。', tools:['用户访谈','问卷设计','回归分析','用户旅程图'] },
+          { slug:'pelican-invest-growth',   title:'Pelican Invest — 付费投放与增长实验', summary:'为金融科技初创公司在Meta平台执行付费广告投放及A/B测试，触达约1.5万次曝光，产出具有统计显著性的创意策略与平台分工建议。', tools:['Meta广告','A/B测试','CTR分析','数据分析报告'] },
+        ],
+      },
+      projectDetails: {
+        'grove-market-research':  { title:'Grove — 用户研究与产品策略', summary:'为初创约会App提供结构化用户研究与数据驱动产品策略，支持产品市场契合度探索。', overview:'与初创约会App Grove合作，开展系统性用户研究与定量分析，产出完整策略包以支持产品定位、功能优先级排序与转化优化决策。', sections:[{heading:'用户研究与分群',content:'完成9位用户深度访谈，以动机与行为为维度构建用户分群，绘制从匹配到线下见面的完整用户旅程，定位高流失率的关键摩擦节点。'},{heading:'定量验证',content:'基于定性研究与竞品分析提出假设，通过问卷数据与线性回归分析进行统计验证，以显著性水平识别影响尝试意愿与线下转化的关键行为驱动因素。'},{heading:'策略交付成果',content:'产出完整策略包，包含竞品全景矩阵、用户旅程图、行为分群框架，以及有数据支撑的产品优化建议，直接支持功能优先级决策。'}], tools:['深度访谈（n=9）','问卷设计','线性回归','竞品矩阵','用户旅程图'] },
+        'pelican-invest-growth':  { title:'Pelican Invest — 付费投放与增长实验', summary:'为金融科技初创公司儿童理财书上市执行Meta付费广告与A/B测试，产出可操作的创意策略与平台分工建议。', overview:'为Pelican Invest的儿童理财书上市设计并执行付费媒体实验——通过Meta广告平台测试创意形式、优化定向策略，并形成数据驱动的媒介分工方案。', sections:[{heading:'投放设置与A/B测试',content:'在Meta平台（Facebook与Instagram）进行受控A/B测试，对比故事化创意与功能信息型创意在两个版位的表现，独立评估创意形式对投放效果的影响。'},{heading:'数据结果',content:'触达约1.5万次曝光。故事化创意显著优于功能型创意（CTR：3.38% vs 1.93%，落地页访问率：3.06% vs 1.68%，p < 0.001）。'},{heading:'策略输出',content:'产出最终数据分析报告，包含平台分工建议与创意策略指南，直接指导客户后续投放阶段的执行方向。'}], tools:['Meta广告管理器','A/B测试','统计显著性检验','CTR与ROAS分析','数据分析报告'] },
+      },
+      humanSide: {
+        title:'我的另一边', subtitle:'策略文档与数据表格之外的另一面。',
+        items:[
+          { emoji:'💃', title:'跳舞', desc:'从小接受系统舞蹈训练，接触过芭蕾、中国舞、民族舞、K-POP、Hip-hop、Jazz等多种舞种，舞蹈也给了我感受不同文化的机会。现在是纽约K-POP舞团Harmonyc Movement的核心成员，团队在YouTube拥有超过12万粉丝。 舞蹈不仅是一种表达方式，也是一种协作方式，它让我在不确定中保持节奏，在团队中找到位置，并通过身体去理解人与人之间的配合与沟通。', photos:['harmonyc_youtube.PNG','跳舞合集.JPG','youtube_playlist.jpg'] },
+          { emoji:'🏂', title:'滑雪', desc:'山地爱好者。在雪上的决策是即时的，也让我更习惯在不确定中快速判断与行动。' , photos:['滑雪单人.JPG','滑雪合照.JPG','滑雪拼图.JPG'] },
+          { emoji:'✈️', title:'旅行', desc:'收集新鲜视角，而不仅仅是海关印章。更关注人和文化，而不是打卡。不同城市是观察行为与消费习惯的真实场景。', photos:['阿拉斯加极光.JPG','秘鲁亚马逊.JPG','denver.jpg'] },
+          { emoji:'📷', title:'摄影', desc:'习惯用画面理解世界。构图和叙事，本质上和做市场营销没有区别。' ,photos:['乌兰察布.JPG','波多黎各老城区.JPG','波多黎各天空.JPG'] },
+          { emoji:'🐱', title:'猫咪主人', desc:'和两只猫长期共处，本质是在和“不可控用户”博弈。让我更关注真实行为，而不是表面表达。' , photos:['小北.JPG','VV.JPG','VV和小北.JPG']},
+          { emoji:'🌐', title:'全球性思维', desc:'中文为母语，英文可作为工作语言。具备长期跨文化学习与生活背景，能够在国际化团队中进行高效沟通与协作。', photos:['MSM合照.jpg','奥美合照.jpg','nyu毕业照.JPG']  },
+        ],
+      },
+      contact: {
+        title:'联系我', subtitle:'让我们共同创造有意义的事情！',
+        emailLabel:'邮箱', linkedinLabel:'LinkedIn', phoneLabel:'电话',
+        emailValue:'YifZhang27@gsb.columbia.edu', linkedinValue:'www.linkedin.com/in/yifei-viva-zhang-9b1232271', phoneValue:'+86 156-5071-2537',
+        quote:'非常愿意进行有意义的对话！无论是想法、讨论、合作、还是机会！',
+        form:{ name:'您的姓名', email:'您的邮箱', message:'您的留言', send:'发送消息' },
+        successTitle:'消息已发送', successDesc:'感谢您的联系，我会尽快回复您。',
+      },
+      gallery: {
+        sectionLabel:'作品截图',
+        slots:['截图 01','截图 02','截图 03','截图 04'],
+        mediaLabel:'照片',
+        photoSlots:['照片 01','照片 02'],
+        videoSlot:'视频',
+        photoHint:'添加照片 — 替换 src 属性',
+        videoHint:'添加视频 — 替换 src 属性',
+        peekLabel:'点击展开',
+        closeBtn:'关闭',
+      },
+    },
+  };
+
+  /* ─────────────────────────────────────────────────
+     ROUTER
+  ───────────────────────────────────────────────── */
+  function useRouter() {
+    const get = () => window.location.hash.replace('#','') || '/';
+    const [path, setPath] = useState(get);
+    useEffect(() => {
+      const h = () => { setPath(get()); window.scrollTo({top:0,behavior:'smooth'}); };
+      window.addEventListener('hashchange', h);
+      return () => window.removeEventListener('hashchange', h);
+    }, []);
+    const navigate = useCallback(to => { window.location.hash = to; }, []);
+    return { path, navigate };
+  }
+
+  /* ─────────────────────────────────────────────────
+     SVG COMPONENTS
+  ───────────────────────────────────────────────── */
+  function Leaf({ size=40, color='currentColor', opacity=1, rotate=0, style={} }) {
+    return (
+      <svg width={size} height={size} viewBox="0 0 60 60" fill="none" style={{transform:`rotate(${rotate}deg)`,opacity,...style}}>
+        <path d="M30 4 C30 4, 52 18, 52 38 C52 52 30 58 30 58 C30 58 8 52 8 38 C8 18 30 4 30 4Z" fill={color}/>
+        <path d="M30 6 L30 56" stroke="rgba(255,255,255,0.4)" strokeWidth="1.5" strokeLinecap="round"/>
+        <path d="M30 22 L44 14" stroke="rgba(255,255,255,0.3)" strokeWidth="1" strokeLinecap="round"/>
+        <path d="M30 32 L44 24" stroke="rgba(255,255,255,0.3)" strokeWidth="1" strokeLinecap="round"/>
+        <path d="M30 42 L44 34" stroke="rgba(255,255,255,0.3)" strokeWidth="1" strokeLinecap="round"/>
+        <path d="M30 22 L16 14" stroke="rgba(255,255,255,0.3)" strokeWidth="1" strokeLinecap="round"/>
+        <path d="M30 32 L16 24" stroke="rgba(255,255,255,0.3)" strokeWidth="1" strokeLinecap="round"/>
+        <path d="M30 42 L16 34" stroke="rgba(255,255,255,0.3)" strokeWidth="1" strokeLinecap="round"/>
+      </svg>
+    );
+  }
+  function Branch({ width=120, color='#6E9B74', opacity=0.2, style={} }) {
+    return (
+      <svg width={width} height={width*0.6} viewBox="0 0 120 72" fill="none" style={{opacity,...style}}>
+        <path d="M10 60 Q40 30 110 20" stroke={color} strokeWidth="2" strokeLinecap="round" fill="none"/>
+        <path d="M50 40 Q60 20 80 10" stroke={color} strokeWidth="1.5" strokeLinecap="round" fill="none"/>
+        <path d="M70 35 Q85 15 100 8" stroke={color} strokeWidth="1.5" strokeLinecap="round" fill="none"/>
+        <circle cx="80" cy="10" r="4" fill={color}/>
+        <circle cx="100" cy="8" r="3" fill={color}/>
+        <circle cx="110" cy="20" r="5" fill={color}/>
+        <circle cx="50" cy="40" r="3.5" fill={color}/>
+      </svg>
+    );
+  }
+
+  /* ─────────────────────────────────────────────────
+     PHOTO SLOT  — reusable placeholder
+  ───────────────────────────────────────────────── */
+  function PhotoSlot({ label, hint, isVideo=false, aspect='16/10' }) {
+    const [hov, setHov] = useState(false);
+    return (
+      <div className="photo-slot"
+           onMouseEnter={()=>setHov(true)} onMouseLeave={()=>setHov(false)}
+           style={{
+             aspectRatio:aspect,
+             border:`1.5px dashed ${hov?'var(--sage)':'rgba(110,155,116,0.3)'}`,
+             borderRadius:'14px',
+             background:hov?'rgba(110,155,116,0.07)':'rgba(110,155,116,0.03)',
+             display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',
+             gap:'8px',padding:'20px',overflow:'hidden',position:'relative',
+           }}>
+        <div style={{position:'absolute',right:'-8px',bottom:'-8px',opacity:0.05,pointerEvents:'none'}}>
+          <Leaf size={60} color="var(--deep)" rotate={20}/>
+        </div>
+        <div className="ps-icon" style={{fontSize:'26px',opacity:hov?0.9:0.35,position:'relative',zIndex:1}}>
+          {isVideo ? '🎬' : '📷'}
+        </div>
+        <p style={{fontSize:'11px',fontWeight:700,color:'var(--sage)',letterSpacing:'0.08em',textAlign:'center',position:'relative',zIndex:1,opacity:hov?1:0.65,transition:'opacity 0.24s'}}>
+          {label}
+        </p>
+        <p style={{fontSize:'10px',color:'var(--text-soft)',textAlign:'center',lineHeight:1.55,position:'relative',zIndex:1,maxWidth:'180px'}}>
+          {hint}
+        </p>
+      </div>
+    );
+  }
+
+  /* ─────────────────────────────────────────────────
+     GALLERY BLOCK — 2×2 grid used in detail pages
+  ───────────────────────────────────────────────── */
+  function GalleryBlock({ g }) {
+    return (
+      <div style={{marginTop:'24px',background:'var(--card-bg)',border:'1px solid var(--border)',borderRadius:'18px',padding:'32px',position:'relative',overflow:'hidden'}}>
+        <div style={{position:'absolute',right:'-20px',top:'-20px',opacity:0.04,pointerEvents:'none'}}>
+          <Branch width={200} color="var(--deep)" opacity={1}/>
+        </div>
+        {/* Label row */}
+        <div style={{display:'flex',alignItems:'center',gap:'10px',marginBottom:'6px'}}>
+          <div style={{width:'24px',height:'2px',background:'linear-gradient(to right,var(--deep),var(--sage))',borderRadius:'99px'}}></div>
+          <Leaf size={12} color="var(--sage)"/>
+          <p className="eyebrow">{g.sectionLabel}</p>
+        </div>
+        <p style={{fontSize:'11.5px',color:'var(--text-soft)',marginBottom:'20px',lineHeight:1.65,maxWidth:'540px'}}>{g.addHint}</p>
+        {/* 2 × 2 grid */}
+        <div className="photo-grid" style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'12px'}}>
+          <img src="断桥王俊凯热搜.jpg" style={{width:'100%',borderRadius:'14px',objectFit:'cover'}}/>
+          <img src="断桥表白抖音.PNG" style={{width:'100%',borderRadius:'14px',objectFit:'cover'}}/>
+          <img src="断桥见女婿抖音.PNG" style={{width:'100%',borderRadius:'14px',objectFit:'cover'}}/>
+          <img src="断桥观影反应抖音.PNG" style={{width:'100%',borderRadius:'14px',objectFit:'cover'}}/>
+        </div>
+      </div>
+    );
+  }
+
+  /* ─────────────────────────────────────────────────
+     MARQUEE
+  ───────────────────────────────────────────────── */
+  function Marquee({ text }) {
+    return (
+      <div style={{borderTop:'1px solid rgba(110,155,116,0.25)',borderBottom:'1px solid rgba(110,155,116,0.25)',padding:'11px 0',overflow:'hidden',background:'rgba(110,155,116,0.08)'}}>
+        <div className="marquee-wrap">
+          <div className="marquee-track">
+            {[text,text].map((t,i)=>(
+              <span key={i} style={{fontSize:'11px',fontWeight:600,letterSpacing:'0.12em',color:'var(--earth)',whiteSpace:'nowrap'}}>{t}</span>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  /* ─────────────────────────────────────────────────
+     NAV
+  ───────────────────────────────────────────────── */
+  function Nav({ path, navigate, lang, setLang, t }) {
+    const [open, setOpen] = useState(false);
+    const links = [
+      {l:t.nav.home,to:'/'},{l:t.nav.education,to:'/education'},
+      {l:t.nav.experience,to:'/experience'},{l:t.nav.projects,to:'/projects'},
+      {l:t.nav.humanSide,to:'/human-side'},{l:t.nav.contact,to:'/contact'}
+    ];
+    const active = to => to==='/' ? path==='/' : path.startsWith(to);
+    return (
+      <nav style={{background:'rgba(243,248,242,0.95)',backdropFilter:'blur(16px)',borderBottom:'1px solid rgba(110,155,116,0.2)',position:'fixed',top:0,left:0,right:0,zIndex:50}}>
+        <div style={{maxWidth:'1100px',margin:'0 auto',padding:'0 24px',height:'60px',display:'flex',alignItems:'center',justifyContent:'space-between'}}>
+          <button onClick={()=>navigate('/')} style={{display:'flex',alignItems:'center',gap:'8px',background:'none',border:'none',cursor:'pointer'}}>
+            <span style={{fontWeight:900,letterSpacing:'0.22em',fontSize:'13px',color:'var(--forest)'}}>VZ</span>
+            <Leaf size={14} color="var(--sage)" opacity={0.7} rotate={-20}/>
+          </button>
+          {/* Desktop links */}
+          <div style={{display:'flex',alignItems:'center',gap:'28px'}}>
+            {links.map(l => (
+              <button key={l.to} onClick={()=>navigate(l.to)}
+                      className="nav-link eyebrow hide-mobile"
+                      style={{background:'none',border:'none',cursor:'pointer',color:active(l.to)?'var(--leaf)':'var(--earth)',fontWeight:active(l.to)?700:500,transition:'color 0.2s'}}>
+                {l.l}
+              </button>
+            ))}
+            <div style={{display:'flex',borderRadius:'99px',overflow:'hidden',border:'1px solid var(--border)'}}>
+              {['en','zh'].map(c=>(
+                <button key={c} onClick={()=>setLang(c)}
+                        style={{padding:'4px 14px',fontSize:'11px',fontWeight:700,background:lang===c?'var(--leaf)':'transparent',color:lang===c?'#fff':'var(--sage)',border:'none',cursor:'pointer',transition:'all 0.2s'}}>
+                  {c==='en'?'EN':'中文'}
+                </button>
+              ))}
+            </div>
+          </div>
+          {/* Hamburger (mobile) */}
+          <button onClick={()=>setOpen(o=>!o)} style={{display:'none',background:'none',border:'none',cursor:'pointer',color:'var(--deep)',padding:'8px'}}>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+              {open?<><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></>:<><line x1="3" y1="7" x2="21" y2="7"/><line x1="3" y1="17" x2="21" y2="17"/></>}
+            </svg>
+          </button>
+        </div>
+        {open && (
+          <div className="mobile-menu" style={{padding:'20px 24px',borderTop:'1px solid var(--border)',background:'var(--bg)',display:'flex',flexDirection:'column',gap:'18px'}}>
+            {links.map(l=>(
+              <button key={l.to} onClick={()=>{navigate(l.to);setOpen(false);}} style={{background:'none',border:'none',cursor:'pointer',textAlign:'left',fontSize:'14px',fontWeight:500,color:active(l.to)?'var(--leaf)':'var(--text)'}}>
+                {l.l}
+              </button>
+            ))}
+            <div style={{display:'flex',gap:'8px'}}>
+              {['en','zh'].map(c=>(
+                <button key={c} onClick={()=>setLang(c)} style={{padding:'5px 14px',borderRadius:'99px',fontSize:'11px',fontWeight:700,background:lang===c?'var(--leaf)':'var(--bg-alt)',color:lang===c?'#fff':'var(--sage)',border:'none',cursor:'pointer'}}>
+                  {c==='en'?'EN':'中文'}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+      </nav>
+    );
+  }
+
+  /* ─────────────────────────────────────────────────
+     PAGE SHELL / HEADER / BACK
+  ───────────────────────────────────────────────── */
+  function Page({ children }) {
+    return (
+      <main className="page-enter" style={{minHeight:'100vh',paddingTop:'60px',background:'var(--bg)'}}>
+        <div style={{maxWidth:'1100px',margin:'0 auto',padding:'72px 24px 80px'}}>{children}</div>
+      </main>
+    );
+  }
+  function Header({ title, subtitle, index }) {
+    return (
+      <header style={{marginBottom:'64px',display:'flex',gap:'24px',alignItems:'flex-end',position:'relative'}}>
+        <Branch style={{position:'absolute',top:'-20px',right:0}} opacity={0.15}/>
+        {index && <div style={{fontSize:'80px',fontWeight:900,color:'rgba(110,155,116,0.12)',lineHeight:1,letterSpacing:'-0.06em',flexShrink:0,marginBottom:'-4px',userSelect:'none'}}>{index}</div>}
+        <div>
+          <p className="eyebrow" style={{marginBottom:'12px'}}>{subtitle}</p>
+          <h1 style={{fontSize:'clamp(2.4rem,5.5vw,3.8rem)',fontWeight:800,letterSpacing:'-0.03em',color:'var(--forest)',lineHeight:1.05}}>{title}</h1>
+        </div>
+      </header>
+    );
+  }
+  function Back({ label, onClick }) {
+    return (
+      <button onClick={onClick}
+              style={{display:'inline-flex',alignItems:'center',gap:'8px',fontSize:'11px',fontWeight:700,letterSpacing:'0.12em',textTransform:'uppercase',color:'var(--sage)',background:'none',border:'none',cursor:'pointer',marginBottom:'48px',padding:0,transition:'color 0.2s'}}
+              onMouseEnter={e=>e.currentTarget.style.color='var(--forest)'}
+              onMouseLeave={e=>e.currentTarget.style.color='var(--sage)'}>
+        ← {label}
+      </button>
+    );
+  }
+
+  /* ─────────────────────────────────────────────────
+     HOME
+  ───────────────────────────────────────────────── */
+  function HomePage({ navigate, t }) {
+    const h = t.home;
+    return (
+      <div className="page-enter" style={{background:'var(--bg)'}}>
+        <section style={{minHeight:'100vh',paddingTop:'60px',display:'flex',flexDirection:'column',position:'relative',overflow:'hidden'}}>
+          <div className="dot-bg" style={{position:'absolute',inset:0,opacity:0.5,pointerEvents:'none',zIndex:0}}/>
+          <div style={{position:'absolute',top:'-40px',right:'-60px',opacity:0.07,pointerEvents:'none',zIndex:0}}><Leaf size={320} color="var(--deep)" rotate={20}/></div>
+          <div style={{position:'absolute',bottom:'80px',left:'-80px',opacity:0.05,pointerEvents:'none',zIndex:0}}><Leaf size={240} color="var(--forest)" rotate={-30}/></div>
+          <div style={{flex:1,display:'flex',alignItems:'center',maxWidth:'1100px',margin:'0 auto',padding:'40px 24px',width:'100%',position:'relative',zIndex:1}}>
+            <div style={{display:'grid',gridTemplateColumns:'1fr auto',gap:'80px',alignItems:'center',width:'100%'}}>
+              <div>
+                <div style={{display:'inline-flex',alignItems:'center',gap:'8px',marginBottom:'32px',padding:'7px 18px',borderRadius:'99px',border:'1px solid rgba(110,155,116,0.35)',background:'rgba(110,155,116,0.08)'}}>
+                  <Leaf size={12} color="var(--sage)" opacity={0.9}/>
+                  <span className="eyebrow">{h.eyebrow}</span>
+                </div>
+                <h1 style={{fontWeight:900,lineHeight:0.95,letterSpacing:'-0.04em',color:'var(--forest)',marginBottom:'24px'}}>
+                  <span style={{display:'block',fontSize:'clamp(3rem,8vw,6.5rem)'}}>{h.name1}</span>
+                  <span style={{display:'block',fontSize:'clamp(2rem,5.5vw,4.5rem)',fontWeight:300,color:'var(--sage)',fontStyle:'italic'}}>{h.name2}</span>
+                </h1>
+                <p className="eyebrow" style={{marginBottom:'32px',color:'var(--sage-light)',letterSpacing:'0.1em'}}>{h.tagline}</p>
+                <div style={{display:'flex',alignItems:'center',gap:'10px',marginBottom:'28px'}}>
+                  <div style={{width:'40px',height:'2.5px',background:'linear-gradient(to right,var(--deep),var(--sage))',borderRadius:'99px'}}/>
+                  <Leaf size={12} color="var(--sage)" opacity={0.6}/>
+                  <div style={{width:'20px',height:'2.5px',background:'var(--sage-pale)',borderRadius:'99px'}}/>
+                </div>
+                <div style={{maxWidth:'500px',marginBottom:'40px'}}>
+                  <p style={{fontSize:'15px',lineHeight:1.85,color:'var(--text)',marginBottom:'16px'}}>{h.bio1}</p>
+                  <p style={{fontSize:'15px',lineHeight:1.85,color:'#4A6E4D'}}>{h.bio2}</p>
+                </div>
+                <div style={{display:'flex',flexWrap:'wrap',gap:'10px',marginBottom:'36px'}}>
+                  <button onClick={()=>navigate('/experience')} className="btn-forest" style={{fontSize:'12px',fontWeight:700,padding:'12px 24px',borderRadius:'99px',letterSpacing:'0.06em'}}>{h.cta1}</button>
+                  <button onClick={()=>navigate('/projects')} className="btn-leaf" style={{fontSize:'12px',fontWeight:700,padding:'12px 24px',borderRadius:'99px',letterSpacing:'0.06em'}}>{h.cta2}</button>
+                  <button onClick={()=>navigate('/contact')} className="btn-leaf" style={{fontSize:'12px',fontWeight:700,padding:'12px 24px',borderRadius:'99px',letterSpacing:'0.06em'}}>{h.cta3}</button>
+                  <a href="https://www.linkedin.com/in/yifei-viva-zhang-9b1232271/" target="_blank" rel="noopener noreferrer" className="btn-leaf" style={{fontSize:'12px',fontWeight:700,padding:'12px 24px',borderRadius:'99px',letterSpacing:'0.06em',textDecoration:'none',display:'inline-flex',alignItems:'center'}}>{h.cta4}</a>
+                </div>
+                <div style={{display:'flex',flexWrap:'wrap',gap:'8px'}}>
+                  {h.stats.map((s,i)=>(
+                    <span key={i} style={{fontSize:'11px',fontWeight:500,color:'var(--earth)',padding:'5px 13px',borderRadius:'8px',background:'rgba(110,155,116,0.1)',border:'1px solid rgba(110,155,116,0.2)'}}>🌱 {s}</span>
+                  ))}
+                </div>
+              </div>
+              {/* Photo placeholder */}
+              <div className="hide-mobile" style={{display:'flex',justifyContent:'flex-end',flexShrink:0}}>
+                <div style={{position:'relative'}}>
+                  <div style={{position:'absolute',inset:'-12px -12px 12px 12px',border:'1.5px dashed rgba(110,155,116,0.4)',borderRadius:'24px',zIndex:0}}/>
+                  <div style={{position:'relative',zIndex:1,width:'320px',height:'420px',borderRadius:'20px',overflow:'hidden',boxShadow:'0 28px 72px rgba(28,54,32,0.18)'}}>
+                    {<img src="linkedin_pic.jpg" alt="Viva Zhang" style={{width:'100%',height:'100%',objectFit:'cover',objectPosition:'top'}} />}
+                    <div style={{width:'100%',height:'100%',background:'linear-gradient(160deg,#C8DEC9 0%,#9BBE9E 40%,#6E9B74 100%)',display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',position:'relative'}}>
+                      <div style={{position:'absolute',top:'20px',right:'20px',opacity:0.3}}><Leaf size={48} color="#2E5233" rotate={15}/></div>
+                      <div style={{position:'absolute',bottom:'30px',left:'16px',opacity:0.2}}><Leaf size={36} color="#1C3620" rotate={-25}/></div>
+                      <div style={{fontSize:'64px',fontWeight:900,color:'#fff',opacity:0.4,letterSpacing:'-0.05em'}}>VZ</div>
+                      <p style={{fontSize:'10px',letterSpacing:'0.14em',color:'#fff',opacity:0.5,marginTop:'8px',textTransform:'uppercase'}}>Add Photo Here</p>
+                    </div>
+                  </div>
+                  <div style={{position:'absolute',bottom:'-20px',right:'-20px',opacity:0.6,zIndex:2}}><Leaf size={40} color="var(--sage-light)" rotate={30}/></div>
+                  <div style={{position:'absolute',top:'-16px',left:'-24px',opacity:0.4,zIndex:2}}><Leaf size={28} color="var(--leaf)" rotate={-40}/></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <Marquee text={h.marquee}/>
+        </section>
+      </div>
+    );
+  }
+
+  /* ─────────────────────────────────────────────────
+     EDUCATION
+  ───────────────────────────────────────────────── */
+  function EducationPage({ t }) {
+    const e = t.education;
+    return (
+      <Page>
+        <Header title={e.title} subtitle={e.subtitle} index="01"/>
+        <div style={{display:'flex',flexDirection:'column',gap:'20px'}}>
+          {[
+            { d:e.cbs, extra:<>
+                <div style={{marginBottom:'16px'}}><p className="eyebrow" style={{marginBottom:'6px'}}>Coursework</p><p style={{fontSize:'13px',color:'var(--earth)',lineHeight:1.7}}>{e.cbs.courses}</p></div>
+                <div style={{marginBottom:'20px'}}><p className="eyebrow" style={{marginBottom:'6px'}}>Clubs</p><p style={{fontSize:'13px',color:'var(--earth)'}}>{e.cbs.clubs}</p></div>
+              </> },
+            { d:e.nyu, extra:<p style={{fontSize:'13px',fontWeight:600,color:'var(--sage)',marginBottom:'16px',fontStyle:'italic'}}>{e.nyu.honors}</p> },
+          ].map(({d,extra},i) => (
+            <div key={i} style={{position:'relative',padding:'40px',background:'var(--card-bg)',borderRadius:'18px',border:'1px solid var(--border)',boxShadow:'0 2px 24px rgba(46,82,51,0.06)',overflow:'hidden'}}>
+              <div style={{position:'absolute',top:'-20px',right:'-16px',opacity:0.05,pointerEvents:'none'}}><Leaf size={160} color="var(--deep)" rotate={i===0?10:-10}/></div>
+              <div style={{position:'absolute',bottom:'-20px',right:'20px',fontSize:'110px',fontWeight:900,color:'rgba(110,155,116,0.06)',lineHeight:1,letterSpacing:'-0.06em',userSelect:'none',pointerEvents:'none'}}>{String(i+1).padStart(2,'0')}</div>
+              <div style={{position:'relative',zIndex:1}}>
+                <div style={{display:'flex',justifyContent:'space-between',alignItems:'flex-start',flexWrap:'wrap',gap:'16px',marginBottom:'20px'}}>
+                  <div>
+                    <div style={{display:'flex',alignItems:'center',gap:'8px',marginBottom:'14px'}}><div style={{width:'28px',height:'2.5px',background:'linear-gradient(to right,var(--deep),var(--sage))',borderRadius:'99px'}}/><Leaf size={10} color="var(--sage)" opacity={0.7}/></div>
+                    <h2 style={{fontSize:'22px',fontWeight:800,color:'var(--forest)',marginBottom:'5px'}}>{d.school}</h2>
+                    <p style={{fontSize:'15px',fontWeight:600,color:'var(--sage)',marginBottom:d.minor?'3px':'0'}}>{d.degree}</p>
+                    {d.minor && <p style={{fontSize:'13px',color:'var(--sage-light)'}}>{d.minor}</p>}
+                  </div>
+                  <div style={{display:'flex',flexDirection:'column',gap:'6px',alignItems:'flex-end'}}>
+                    <span style={{fontSize:'12px',fontWeight:700,padding:'6px 16px',borderRadius:'99px',background:'rgba(110,155,116,0.15)',color:'var(--leaf)',border:'1px solid rgba(110,155,116,0.3)'}}>{d.years||''}</span>
+                    <span style={{fontSize:'11px',fontWeight:500,padding:'4px 12px',borderRadius:'99px',background:'var(--bg-alt)',color:'var(--earth)',border:'1px solid var(--border)'}}>{d.gre||d.gpa}</span>
+                  </div>
+                </div>
+                <p style={{fontSize:'15px',lineHeight:1.8,color:'var(--text)',marginBottom:'20px',maxWidth:'640px'}}>{d.desc}</p>
+                {extra}
+                <div style={{display:'flex',flexWrap:'wrap',gap:'8px'}}>{d.tags.map(tag=><span key={tag} className="tag">{tag}</span>)}</div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </Page>
+    );
+  }
+
+  /* ─────────────────────────────────────────────────
+     EXPERIENCE LIST
+  ───────────────────────────────────────────────── */
+  function ExperiencePage({ navigate, t }) {
+    const exp = t.experience;
+    const cards = [
+      {key:'ogilvy',    slug:'ogilvy-audi',                  d:exp.cards.ogilvy},
+      {key:'xiaomi',    slug:'xiaomi-retail-marketing',       d:exp.cards.xiaomi},
+      {key:'gf',        slug:'gf-securities-equity-research', d:exp.cards.gf},
+      {key:'darkHorse', slug:'dark-horse-film-marketing',     d:exp.cards.darkHorse},
+    ];
+    return (
+      <Page>
+        <Header title={exp.title} subtitle={exp.subtitle} index="02"/>
+        <div style={{display:'flex',flexDirection:'column',gap:'14px'}} className="stagger">
+          {cards.map(({key,slug,d},i)=>(
+            <div key={key} className="card-exp" onClick={()=>navigate(`/experience/${slug}`)}
+                 style={{cursor:'pointer',padding:'28px 32px',display:'flex',gap:'24px',alignItems:'center',position:'relative',overflow:'hidden'}}>
+              <div style={{position:'absolute',right:'-10px',top:'-10px',opacity:0.04,pointerEvents:'none'}}><Leaf size={100} color="var(--deep)" rotate={i*15}/></div>
+              <div style={{fontSize:'56px',fontWeight:900,color:'rgba(110,155,116,0.13)',width:'72px',flexShrink:0,textAlign:'center',letterSpacing:'-0.06em',lineHeight:1,userSelect:'none'}}>{String(i+1).padStart(2,'0')}</div>
+              <div style={{flex:1,minWidth:0,position:'relative',zIndex:1}}>
+                <div style={{display:'flex',justifyContent:'space-between',alignItems:'flex-start',flexWrap:'wrap',gap:'10px',marginBottom:'10px'}}>
+                  <div>
+                    <p className="eyebrow" style={{marginBottom:'5px'}}>{d.period} · {d.location}</p>
+                    <h3 style={{fontSize:'20px',fontWeight:800,color:'var(--forest)',marginBottom:'3px'}}>{d.company}</h3>
+                    <p style={{fontSize:'13px',color:'var(--sage-light)',fontStyle:'italic'}}>{d.role}</p>
+                  </div>
+                  <span style={{color:'var(--sage-pale)',fontSize:'18px',marginTop:'4px'}}>→</span>
+                </div>
+                <p style={{fontSize:'14px',lineHeight:1.75,color:'var(--text)',marginBottom:'14px'}}>{d.summary}</p>
+                <div style={{display:'flex',flexWrap:'wrap',gap:'6px'}}>{d.tags.map(tag=><span key={tag} className="tag">{tag}</span>)}</div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </Page>
+    );
+  }
+
+  /* ─────────────────────────────────────────────────
+     EXPERIENCE DETAIL  (+ photo gallery)
+  ───────────────────────────────────────────────── */
+  function ExperienceDetailPage({ slug, navigate, t }) {
+    const map = {'ogilvy-audi':'ogilvy','xiaomi-retail-marketing':'xiaomi','gf-securities-equity-research':'gf','dark-horse-film-marketing':'darkHorse'};
+    const d = t.experienceDetails[map[slug]];
+    const g = t.gallery;
+    if (!d) return <Page><p style={{color:'var(--sage)'}}>Not found.</p></Page>;
+    return (
+      <Page>
+        <Back label={t.nav.experience} onClick={()=>navigate('/experience')}/>
+        <div style={{marginBottom:'52px',paddingBottom:'40px',borderBottom:'1px solid var(--border)',position:'relative',overflow:'hidden'}}>
+          <div style={{position:'absolute',right:0,top:'-10px',opacity:0.06,pointerEvents:'none'}}><Leaf size={180} color="var(--deep)" rotate={20}/></div>
+          <p className="eyebrow" style={{marginBottom:'12px'}}>{d.period} · {d.location}</p>
+          <h1 style={{fontSize:'clamp(2.2rem,5vw,3.6rem)',fontWeight:900,letterSpacing:'-0.035em',color:'var(--forest)',lineHeight:1,marginBottom:'10px'}}>
+            <span style={{borderBottom:'3px solid rgba(110,155,116,0.4)',paddingBottom:'2px'}}>{d.company}</span>
+          </h1>
+          <p style={{fontSize:'17px',color:'var(--sage-light)',fontStyle:'italic',fontWeight:300}}>{d.role}</p>
+        </div>
+
+        <div className="detail-grid" style={{display:'grid',gridTemplateColumns:'minmax(0,1fr) 260px',gap:'28px',alignItems:'start'}}>
+          <div style={{display:'flex',flexDirection:'column',gap:'18px'}}>
+            <div style={{background:'var(--card-bg)',border:'1px solid var(--border)',borderRadius:'16px',padding:'28px'}}>
+              <p className="eyebrow" style={{marginBottom:'14px'}}>Overview</p>
+              <p style={{fontSize:'15px',lineHeight:1.85,color:'var(--text)'}}>{d.overview}</p>
+            </div>
+            <div style={{background:'var(--card-bg)',border:'1px solid var(--border)',borderRadius:'16px',padding:'28px'}}>
+              <p className="eyebrow" style={{marginBottom:'20px'}}>What I Worked On</p>
+              <ul style={{display:'flex',flexDirection:'column',gap:'16px',listStyle:'none',padding:0,margin:0}}>
+                {d.worked.map((item,i)=>(
+                  <li key={i} style={{display:'flex',gap:'14px',alignItems:'flex-start'}}>
+                    <div style={{flexShrink:0,marginTop:'3px'}}><Leaf size={16} color="var(--sage)" opacity={0.8}/></div>
+                    <p style={{fontSize:'15px',lineHeight:1.75,color:'var(--text)',margin:0}}>{item}</p>
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <div style={{background:'linear-gradient(135deg,rgba(110,155,116,0.1) 0%,rgba(74,122,80,0.08) 100%)',border:'1px solid rgba(110,155,116,0.25)',borderRadius:'16px',padding:'28px',position:'relative',overflow:'hidden'}}>
+              <div style={{position:'absolute',right:'-8px',bottom:'-8px',opacity:0.08,pointerEvents:'none'}}><Leaf size={80} color="var(--deep)" rotate={20}/></div>
+              <p className="eyebrow" style={{marginBottom:'14px'}}>Impact</p>
+              <div className="pull-quote"><p style={{fontSize:'16px',lineHeight:1.8,color:'var(--forest)',fontStyle:'italic',margin:0}}>{d.impact}</p></div>
+            </div>
+          </div>
+          {/* Sidebar */}
+          <div style={{position:'sticky',top:'80px',background:'var(--card-bg)',border:'1px solid var(--border)',borderRadius:'16px',padding:'24px'}}>
+            <div style={{display:'flex',alignItems:'center',gap:'8px',marginBottom:'20px'}}><Leaf size={14} color="var(--sage)"/><p className="eyebrow">Key Skills</p></div>
+            <div style={{display:'flex',flexDirection:'column',gap:'10px'}}>
+              {d.skills.map(s=>(
+                <div key={s} style={{display:'flex',alignItems:'center',gap:'10px'}}>
+                  <div style={{width:'3px',height:'20px',background:'linear-gradient(to bottom,var(--leaf),var(--sage-light))',borderRadius:'99px',flexShrink:0}}/>
+                  <span style={{fontSize:'13px',fontWeight:500,color:'var(--text)'}}>{s}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+       {map[slug] === 'darkHorse' && <GalleryBlock g={g}/>}
+      </Page>
+    );
+  }
+
+  /* ─────────────────────────────────────────────────
+     PROJECTS LIST
+  ───────────────────────────────────────────────── */
+  function ProjectsPage({ navigate, t }) {
+    const p = t.projects;
+    return (
+      <Page>
+        <Header title={p.title} subtitle={p.subtitle} index="03"/>
+        <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fill,minmax(320px,1fr))',gap:'18px'}} className="stagger">
+          {p.items.map((proj,i)=>(
+            <div key={proj.slug} className="card" onClick={()=>navigate(`/projects/${proj.slug}`)}
+                 style={{cursor:'pointer',padding:'36px',position:'relative',overflow:'hidden'}}>
+              <div style={{position:'absolute',top:'-20px',right:'-20px',opacity:0.06,pointerEvents:'none'}}><Leaf size={120} color="var(--deep)" rotate={i%2===0?15:-10}/></div>
+              <div style={{position:'absolute',top:'-12px',right:'12px',fontSize:'96px',fontWeight:900,color:'rgba(110,155,116,0.08)',lineHeight:1,letterSpacing:'-0.06em',userSelect:'none',pointerEvents:'none'}}>{String(i+1).padStart(2,'0')}</div>
+              <div style={{position:'relative',zIndex:1}}>
+                <div style={{display:'flex',alignItems:'center',gap:'8px',marginBottom:'20px'}}><div style={{width:'28px',height:'2.5px',background:'linear-gradient(to right,var(--deep),var(--sage))',borderRadius:'99px'}}/><Leaf size={10} color="var(--sage)" opacity={0.7}/></div>
+                <h3 style={{fontSize:'19px',fontWeight:800,color:'var(--forest)',marginBottom:'12px',lineHeight:1.2}}>{proj.title}</h3>
+                <p style={{fontSize:'14px',lineHeight:1.75,color:'var(--text)',marginBottom:'28px'}}>{proj.summary}</p>
+                <div style={{display:'flex',justifyContent:'space-between',alignItems:'flex-end',flexWrap:'wrap',gap:'10px'}}>
+                  <div style={{display:'flex',flexWrap:'wrap',gap:'6px'}}>{proj.tools.map(tool=><span key={tool} className="tag">{tool}</span>)}</div>
+                  <span style={{fontSize:'12px',fontWeight:700,color:'var(--leaf)',letterSpacing:'0.06em'}}>{p.viewBtn}</span>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </Page>
+    );
+  }
+
+  /* ─────────────────────────────────────────────────
+     PROJECT DETAIL  (+ photo gallery)
+  ───────────────────────────────────────────────── */
+  function ProjectDetailPage({ slug, navigate, t }) {
+    const d = t.projectDetails[slug];
+    const g = t.gallery;
+    if (!d) return <Page><p style={{color:'var(--sage)'}}>Not found.</p></Page>;
+    return (
+      <Page>
+        <Back label={t.nav.projects} onClick={()=>navigate('/projects')}/>
+        <div style={{marginBottom:'52px',paddingBottom:'40px',borderBottom:'1px solid var(--border)'}}>
+          <div style={{display:'flex',alignItems:'center',gap:'8px',marginBottom:'20px'}}><div style={{width:'36px',height:'2.5px',background:'linear-gradient(to right,var(--deep),var(--sage))',borderRadius:'99px'}}/><Leaf size={12} color="var(--sage)"/></div>
+          <h1 style={{fontSize:'clamp(2rem,5vw,3.4rem)',fontWeight:900,letterSpacing:'-0.035em',color:'var(--forest)',marginBottom:'16px',lineHeight:1.05}}>{d.title}</h1>
+          <p style={{fontSize:'17px',color:'var(--sage-light)',maxWidth:'540px',lineHeight:1.7,fontWeight:300}}>{d.summary}</p>
+        </div>
+        <div className="detail-grid" style={{display:'grid',gridTemplateColumns:'minmax(0,1fr) 240px',gap:'24px',alignItems:'start'}}>
+          <div style={{display:'flex',flexDirection:'column',gap:'18px'}}>
+            <div style={{background:'var(--card-bg)',border:'1px solid var(--border)',borderRadius:'16px',padding:'28px'}}>
+              <p className="eyebrow" style={{marginBottom:'14px'}}>Overview</p>
+              <p style={{fontSize:'15px',lineHeight:1.85,color:'var(--text)'}}>{d.overview}</p>
+            </div>
+            {d.sections.map((sec,i)=>(
+              <div key={i} style={{background:'var(--card-bg)',border:'1px solid var(--border)',borderRadius:'16px',padding:'28px'}}>
+                <p className="eyebrow" style={{marginBottom:'14px'}}>{sec.heading}</p>
+                <p style={{fontSize:'15px',lineHeight:1.85,color:'var(--text)'}}>{sec.content}</p>
+              </div>
+            ))}
+          </div>
+          <div style={{position:'sticky',top:'80px',background:'var(--card-bg)',border:'1px solid var(--border)',borderRadius:'16px',padding:'24px'}}>
+            <div style={{display:'flex',alignItems:'center',gap:'8px',marginBottom:'20px'}}><Leaf size={14} color="var(--sage)"/><p className="eyebrow">Tools & Methods</p></div>
+            <div style={{display:'flex',flexDirection:'column',gap:'10px'}}>
+              {d.tools.map(tool=>(
+                <div key={tool} style={{display:'flex',alignItems:'center',gap:'10px'}}>
+                  <div style={{width:'3px',height:'20px',background:'linear-gradient(to bottom,var(--leaf),var(--sage-light))',borderRadius:'99px',flexShrink:0}}/>
+                  <span style={{fontSize:'13px',fontWeight:500,color:'var(--text)'}}>{tool}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* ── Photo Gallery ── */}
+       
+      </Page>
+    );
+  }
+
+  /* ─────────────────────────────────────────────────
+     HUMAN SIDE  — expandable cards + modal
+  ───────────────────────────────────────────────── */
+  function HumanSidePage({ t }) {
+    const hs = t.humanSide;
+    const g  = t.gallery;
+    const [openIdx, setOpenIdx] = useState(null);
+
+    useEffect(() => {
+      const onKey = e => { if (e.key === 'Escape') setOpenIdx(null); };
+      window.addEventListener('keydown', onKey);
+      return () => window.removeEventListener('keydown', onKey);
+    }, []);
+    useEffect(() => {
+      document.body.style.overflow = openIdx !== null ? 'hidden' : '';
+      return () => { document.body.style.overflow = ''; };
+    }, [openIdx]);
+
+    const accents = [
+      {bg:'linear-gradient(135deg,rgba(110,155,116,0.18),rgba(74,122,80,0.1))',bd:'rgba(110,155,116,0.3)'},
+      {bg:'var(--card-bg)',bd:'var(--border)'},
+      {bg:'var(--card-bg)',bd:'var(--border)'},
+      {bg:'linear-gradient(135deg,rgba(46,82,51,0.06),rgba(110,155,116,0.09))',bd:'rgba(110,155,116,0.2)'},
+      {bg:'var(--card-bg)',bd:'var(--border)'},
+      {bg:'var(--card-bg)',bd:'var(--border)'},
+    ];
+
+    return (
+      <Page>
+        <Header title={hs.title} subtitle={hs.subtitle} index="04"/>
+
+        {/* Card grid */}
+        <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fill,minmax(260px,1fr))',gap:'16px'}} className="stagger">
+          {hs.items.map((item,i)=>(
+            <div key={i} className="hs-card"
+                 onClick={()=>setOpenIdx(i)}
+                 style={{
+                   padding:'32px',position:'relative',overflow:'hidden',borderRadius:'18px',
+                   background:accents[i].bg, border:`1px solid ${accents[i].bd}`,
+                 }}>
+              {/* Big faded emoji bg */}
+              <div style={{position:'absolute',top:'-10px',right:'-8px',fontSize:'80px',opacity:0.07,userSelect:'none',pointerEvents:'none',lineHeight:1}}>
+                {item.emoji}
+              </div>
+              {i===0 && <div style={{position:'absolute',bottom:'12px',right:'12px',opacity:0.15}}><Leaf size={36} color="var(--deep)" rotate={20}/></div>}
+
+              <div style={{position:'relative',zIndex:1}}>
+                <div style={{fontSize:'38px',marginBottom:'14px',lineHeight:1}}>{item.emoji}</div>
+                <h3 style={{fontSize:'15px',fontWeight:700,color:'var(--forest)',marginBottom:'10px',lineHeight:1.35}}>{item.title}</h3>
+                <p style={{fontSize:'13px',lineHeight:1.75,color:'var(--earth)',marginBottom:'20px'}}>{item.desc}</p>
+                {/* Hover peek hint */}
+                <div style={{display:'flex',alignItems:'center',gap:'7px'}}>
+                  <div style={{width:'14px',height:'1.5px',background:'var(--sage-pale)',borderRadius:'99px',transition:'width 0.24s'}}/>
+                  <span className="hs-hint"
+                        style={{fontSize:'10px',fontWeight:700,letterSpacing:'0.14em',textTransform:'uppercase',color:'var(--sage)',opacity:0,transform:'translateY(5px)',transition:'opacity 0.22s,transform 0.22s'}}>
+                    {g.peekLabel} →
+                  </span>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Technical skills strip */}
+        <div style={{marginTop:'40px',background:'var(--card-bg)',border:'1px solid var(--border)',borderRadius:'16px',padding:'28px',position:'relative',overflow:'hidden'}}>
+          <div style={{position:'absolute',right:'-20px',top:'-20px',opacity:0.04,pointerEvents:'none'}}><Branch width={180} color="var(--deep)" opacity={1}/></div>
+          <div style={{display:'flex',alignItems:'center',gap:'10px',marginBottom:'18px'}}>
+            <div style={{width:'28px',height:'2.5px',background:'linear-gradient(to right,var(--deep),var(--sage))',borderRadius:'99px'}}/>
+            <Leaf size={12} color="var(--sage)"/>
+            <p className="eyebrow">Technical Skills</p>
+          </div>
+          <div style={{display:'flex',flexWrap:'wrap',gap:'8px'}}>
+            {['SQL','Python (Pandas / Numpy)','Minitab','Google Suite','Excel','PowerPoint','Canva','CapCut','Adobe Photoshop','HTML / CSS','p5.js'].map(s=>(
+              <span key={s} className="skill-chip">{s}</span>
+            ))}
+          </div>
+        </div>
+
+        {/* ────────── MODAL ────────── */}
+        {openIdx !== null && (
+          <div className="modal-overlay"
+               onClick={e=>{ if(e.target===e.currentTarget) setOpenIdx(null); }}
+               style={{position:'fixed',inset:0,zIndex:200,background:'rgba(18,36,20,0.65)',backdropFilter:'blur(10px)',WebkitBackdropFilter:'blur(10px)',display:'flex',alignItems:'center',justifyContent:'center',padding:'16px'}}>
+            <div className="modal-inner"
+                 style={{background:'var(--card-bg)',borderRadius:'24px',maxWidth:'680px',width:'100%',maxHeight:'90vh',overflowY:'auto',border:'1px solid var(--border)',boxShadow:'0 50px 110px rgba(18,36,20,0.32)',position:'relative',display:'flex',flexDirection:'column'}}>
+
+              {/* ── Modal header — forest band ── */}
+              <div style={{background:'linear-gradient(135deg,var(--forest),var(--deep))',borderRadius:'24px 24px 0 0',padding:'36px 36px 32px',position:'relative',overflow:'hidden',flexShrink:0}}>
+                {/* Leaf decorations */}
+                <div style={{position:'absolute',right:'-24px',top:'-24px',opacity:0.1,pointerEvents:'none'}}><Leaf size={140} color="#fff" rotate={20}/></div>
+                <div style={{position:'absolute',left:'-10px',bottom:'-30px',opacity:0.06,pointerEvents:'none'}}><Leaf size={90} color="#fff" rotate={-35}/></div>
+                {/* Close × */}
+                <button onClick={()=>setOpenIdx(null)}
+                        style={{position:'absolute',top:'18px',right:'18px',width:'36px',height:'36px',borderRadius:'50%',background:'rgba(255,255,255,0.12)',border:'1px solid rgba(255,255,255,0.18)',display:'flex',alignItems:'center',justifyContent:'center',cursor:'pointer',color:'rgba(255,255,255,0.8)',fontSize:'16px',transition:'background 0.2s',zIndex:2}}
+                        onMouseEnter={e=>e.currentTarget.style.background='rgba(255,255,255,0.24)'}
+                        onMouseLeave={e=>e.currentTarget.style.background='rgba(255,255,255,0.12)'}>✕</button>
+                <div style={{position:'relative',zIndex:1}}>
+                  <div style={{fontSize:'52px',marginBottom:'14px',lineHeight:1}}>{hs.items[openIdx].emoji}</div>
+                  <h2 style={{fontSize:'22px',fontWeight:800,color:'#fff',marginBottom:'12px',lineHeight:1.2,paddingRight:'48px'}}>{hs.items[openIdx].title}</h2>
+                  <p style={{fontSize:'14px',lineHeight:1.85,color:'rgba(200,222,201,0.88)',maxWidth:'460px'}}>{hs.items[openIdx].desc}</p>
+                </div>
+              </div>
+
+              {/* ── Modal body — media slots ── */}
+              <div style={{padding:'28px 32px 32px',flexShrink:0}}>
+                {/* Section label */}
+                <div style={{display:'flex',alignItems:'center',gap:'10px',marginBottom:'18px'}}>
+                  <div style={{width:'24px',height:'2px',background:'linear-gradient(to right,var(--deep),var(--sage))',borderRadius:'99px'}}/>
+                  <Leaf size={12} color="var(--sage)"/>
+                  <p className="eyebrow">{g.mediaLabel}</p>
+                  <div style={{flex:1,height:'1px',background:'var(--border)'}}/>
+                </div>
+
+                <div className="photo-grid" style={{display:'grid',gridTemplateColumns:'1fr',gap:'12px'}}>
+                  {hs.items[openIdx].photos.map((src,j)=>(
+                <img key={j} src={src} style={{width:'100%',borderRadius:'14px',objectFit:'cover',aspectRatio:'3/2'}}/>
+                   ))}
+                </div>
+
+                {/* Hint */}
+                <div style={{marginTop:'16px',padding:'12px 16px',background:'rgba(110,155,116,0.06)',border:'1px solid var(--border)',borderRadius:'10px',display:'flex',gap:'10px',alignItems:'flex-start'}}>
+                  <span style={{fontSize:'14px',flexShrink:0}}>💡</span>
+                  <p style={{fontSize:'11px',color:'var(--text-soft)',lineHeight:1.65}}>{g.addHint}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+      </Page>
+    );
+  }
+
+  /* ─────────────────────────────────────────────────
+     CONTACT
+  ───────────────────────────────────────────────── */
+  function ContactPage({ t }) {
+    const c = t.contact;
+    const [form,setForm] = useState({name:'',email:'',message:''});
+    const [sent,setSent] = useState(false);
+    const upd = f => e => setForm(p=>({...p,[f]:e.target.value}));
+    return (
+      <Page>
+        <div style={{marginBottom:'64px',position:'relative'}}>
+          <div style={{position:'absolute',right:0,top:'-10px',opacity:0.07,pointerEvents:'none'}}><Branch width={200} color="var(--deep)" opacity={1}/></div>
+          <p className="eyebrow" style={{marginBottom:'16px'}}>{c.subtitle}</p>
+          <h1 style={{fontSize:'clamp(2.5rem,7vw,5.5rem)',fontWeight:900,letterSpacing:'-0.04em',color:'var(--forest)',lineHeight:1,display:'flex',alignItems:'center',gap:'16px',flexWrap:'wrap'}}>
+            {c.title}<Leaf size={48} color="var(--sage)" opacity={0.6} rotate={15}/>
+          </h1>
+        </div>
+        <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(300px,1fr))',gap:'40px'}}>
+          <div>
+            <div style={{display:'flex',flexDirection:'column',gap:'12px',marginBottom:'24px'}}>
+              {[
+                {label:c.emailLabel,value:c.emailValue,href:`mailto:${c.emailValue}`,icon:'✉'},
+                {label:c.linkedinLabel,value:c.linkedinValue,href:`https://${c.linkedinValue}`,icon:'in'},
+                {label:c.phoneLabel,value:c.phoneValue,href:`tel:${c.phoneValue.replace(/\s/g,'')}`,icon:'☎'},
+              ].map(item=>(
+                <a key={item.label} href={item.href} target={item.href.startsWith('http')?'_blank':undefined} rel="noopener noreferrer"
+                   style={{display:'flex',alignItems:'center',gap:'16px',background:'var(--card-bg)',border:'1px solid var(--border)',borderRadius:'14px',padding:'16px 20px',textDecoration:'none',transition:'all 0.2s'}}
+                   onMouseEnter={e=>{e.currentTarget.style.borderColor='var(--mint)';e.currentTarget.style.background='rgba(110,155,116,0.05)';e.currentTarget.style.boxShadow='0 4px 20px rgba(46,82,51,0.08)';}}
+                   onMouseLeave={e=>{e.currentTarget.style.borderColor='var(--border)';e.currentTarget.style.background='var(--card-bg)';e.currentTarget.style.boxShadow='none';}}>
+                  <div style={{width:'36px',height:'36px',borderRadius:'50%',background:'rgba(110,155,116,0.15)',border:'1px solid rgba(110,155,116,0.25)',display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0,fontSize:'14px',color:'var(--sage)',fontWeight:700}}>{item.icon}</div>
+                  <div><p className="eyebrow" style={{marginBottom:'3px'}}>{item.label}</p><p style={{fontSize:'14px',fontWeight:500,color:'var(--forest)'}}>{item.value}</p></div>
+                </a>
+              ))}
+            </div>
+            <div style={{background:'linear-gradient(135deg,rgba(110,155,116,0.12),rgba(74,122,80,0.07))',border:'1px solid rgba(110,155,116,0.25)',borderRadius:'14px',padding:'28px',position:'relative',overflow:'hidden'}}>
+              <div style={{position:'absolute',right:'-10px',bottom:'-10px',opacity:0.08,pointerEvents:'none'}}><Leaf size={72} color="var(--deep)" rotate={20}/></div>
+              <div className="pull-quote"><p style={{fontSize:'16px',fontStyle:'italic',lineHeight:1.8,color:'var(--forest)',margin:0}}>{c.quote}</p></div>
+            </div>
+          </div>
+        </div>
+      </Page>
+    );
+  }
+
+  /* ─────────────────────────────────────────────────
+     FOOTER
+  ───────────────────────────────────────────────── */
+  function Footer() {
+    return (
+      <footer style={{background:'var(--forest)',padding:'32px 24px',position:'relative',overflow:'hidden'}}>
+        <div style={{position:'absolute',left:'-20px',top:'-20px',opacity:0.06,pointerEvents:'none'}}><Leaf size={120} color="#fff" rotate={-20}/></div>
+        <div style={{position:'absolute',right:'60px',bottom:'-30px',opacity:0.05,pointerEvents:'none'}}><Leaf size={100} color="#fff" rotate={15}/></div>
+        <div style={{maxWidth:'1100px',margin:'0 auto',display:'flex',justifyContent:'space-between',alignItems:'center',flexWrap:'wrap',gap:'12px',position:'relative',zIndex:1}}>
+          <div style={{display:'flex',alignItems:'center',gap:'8px'}}>
+            <span style={{fontWeight:900,letterSpacing:'0.22em',fontSize:'13px',color:'rgba(255,255,255,0.9)'}}>VZ</span>
+            <Leaf size={14} color="var(--sage-light)" opacity={0.6} rotate={-10}/>
+          </div>
+          <p style={{fontSize:'11px',color:'rgba(255,255,255,0.35)',letterSpacing:'0.1em'}}>Yifei (Viva) Zhang · 2025</p>
+        </div>
+      </footer>
+    );
+  }
+
+  /* ─────────────────────────────────────────────────
+     APP
+  ───────────────────────────────────────────────── */
+  function App() {
+    const { path, navigate } = useRouter();
+    const [lang, setLang] = useState('en');
+    const t = T[lang];
+    const render = () => {
+      if (path === '/')                    return <HomePage navigate={navigate} t={t}/>;
+      if (path === '/education')           return <EducationPage t={t}/>;
+      if (path === '/experience')          return <ExperiencePage navigate={navigate} t={t}/>;
+      if (path.startsWith('/experience/')) return <ExperienceDetailPage slug={path.slice(12)} navigate={navigate} t={t}/>;
+      if (path === '/projects')            return <ProjectsPage navigate={navigate} t={t}/>;
+      if (path.startsWith('/projects/'))   return <ProjectDetailPage slug={path.slice(10)} navigate={navigate} t={t}/>;
+      if (path === '/human-side')          return <HumanSidePage t={t}/>;
+      if (path === '/contact')             return <ContactPage t={t}/>;
+      return <HomePage navigate={navigate} t={t}/>;
+    };
+    return (<><Nav path={path} navigate={navigate} lang={lang} setLang={setLang} t={t}/>{render()}<Footer/></>);
+  }
+
+  ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+</body>
+</html>
